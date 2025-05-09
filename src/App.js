@@ -64,7 +64,7 @@ function App() {
     try {
       const [ids, names, locations] = await contract.getAllGyms();
       const gymsList = ids.map((id, idx) => ({
-        id: id.toString(),
+        id: id.toNumber(),
         name: names[idx],
         location: locations[idx],
       }));
@@ -76,6 +76,22 @@ function App() {
   }
 
   // Load reviews for selected gym
+  // async function loadReviews(gymId) {
+  //   if (!contract || !gymId) return;
+  //   try {
+  //     const rawReviews = await contract.getReviews(gymId);
+  //     const cleanedReviews = rawReviews.map((r) => ({
+  //       reviewer: r.reviewer,
+  //       rating: r.rating,
+  //       reviewText: r.reviewText,
+  //       timestamp: new Date(r.timestamp.toNumber() * 1000).toLocaleString(),
+  //     }));
+  //     setReviews(cleanedReviews);
+  //   } catch (error) {
+  //     console.error("Failed to load reviews:", error);
+  //     alert("Failed to load reviews. Check console.");
+  //   }
+  // }
   async function loadReviews(gymId) {
     if (!contract || !gymId) return;
     try {
@@ -84,7 +100,8 @@ function App() {
         reviewer: r.reviewer,
         rating: r.rating,
         reviewText: r.reviewText,
-        timestamp: new Date(r.timestamp.toNumber() * 1000).toLocaleString(),
+        // Use r.timestamp as number, no toNumber() call
+        timestamp: new Date(Number(r.timestamp) * 1000).toLocaleString(),
       }));
       setReviews(cleanedReviews);
     } catch (error) {
@@ -92,7 +109,6 @@ function App() {
       alert("Failed to load reviews. Check console.");
     }
   }
-
   // Handle adding a new gym
   async function handleAddGym() {
     if (!contract || !newGymName || !newGymLocation) return;
