@@ -64,7 +64,7 @@ function App() {
     try {
       const [ids, names, locations] = await contract.getAllGyms();
       const gymsList = ids.map((id, idx) => ({
-        id: id.toNumber(),
+        id: Number(id),
         name: names[idx],
         location: locations[idx],
       }));
