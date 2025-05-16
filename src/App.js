@@ -1,16 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { BrowserProvider, Contract } from "ethers";
+import Modal from "./components/Modal";
+import Toolbar from "./components/Toolbar";
+import GymCard from "./components/GymCard";
+import background from "./background.jpeg";
 
-const contractAddress = "0xadc744e5d623e100d9461811c5b503c752fa75d3";
+// const contractAddress = "0xadc744e5d623e100d9461811c5b503c752fa75d3";
+// const contractAddress = "0xf2fe4f48920828d2822b2d6ef6eec91af2632b17";
+const contractAddress = "0x3ef39b4231a645ba947bb2a02d428c377259ef78";
+
 const contractABI = [
   "function getGymCount() view returns (uint256)",
-  "function getAllGyms() view returns (uint256[] memory, string[] memory, string[] memory)",
+  "function getAllGyms() view returns (uint256[] memory, string[] memory, string[] memory, uint256[] memory)",
   "function addGym(string calldata _name, string calldata _location) payable",
   "function submitReview(uint256 _gymId, uint8 _rating, string calldata _reviewText) payable",
   "function getReviews(uint256 _gymId) view returns (tuple(address reviewer, uint8 rating, string reviewText, uint256 timestamp)[])",
+  "function removeGym(uint256 _gymId) public",
 ];
 
 function App() {
+  const appStyle = {
+    fontFamily: "Arial, sans-serif",
+    maxWidth: 900,
+    margin: "auto",
+    padding: 20,
+    backgroundColor: "#f9f9f9",
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    backgroundImage: `url(${background})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    // backgroundRepeat: "no-repeat",
+  };
+
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [contract, setContract] = useState(null);
@@ -63,12 +86,16 @@ function App() {
     if (!contract) return;
     try {
       setLoadingGyms(true);
-      const [ids, names, locations] = await contract.getAllGyms();
+      // Updated to receive meanScores as the 4th returned value
+      const [ids, names, locations, meanScores] = await contract.getAllGyms();
+
       const gymsList = ids.map((id, idx) => ({
         id: Number(id),
         name: names[idx],
         location: locations[idx],
+        meanScore: Number(meanScores[idx]), // add meanScore here
       }));
+
       setGyms(gymsList);
       setExpandedGymIds(new Set());
       setReviewsByGymId({});
@@ -129,7 +156,8 @@ function App() {
       setNewReviewText("");
       setNewReviewRating(5);
       setShowAddReviewModal(false);
-      loadReviews(selectedGymForReview);
+      await loadGyms();
+      await loadReviews(selectedGymForReview);
     } catch (error) {
       console.error("Failed to submit review:", error);
       alert("Failed to submit review: " + error.message);
@@ -148,80 +176,47 @@ function App() {
     setExpandedGymIds(newSet);
   }
 
+  async function handleRemoveGym(gymId) {
+    if (!contract) return;
+
+    const gym = gyms.find((g) => g.id === gymId);
+    if (!gym) {
+      alert("Gym not found");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Are you sure you want to remove the gym "${gym.name}"? This action cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    try {
+      const tx = await contract.removeGym(gymId);
+      await tx.wait();
+      alert(`Gym "${gym.name}" removed successfully.`);
+      loadGyms();
+    } catch (error) {
+      console.error("Failed to remove gym:", error);
+      alert("Failed to remove gym: " + error.message);
+    }
+  }
+
+  function handleAddReviewClick(gymId) {
+    setSelectedGymForReview(gymId);
+    setShowAddReviewModal(true);
+    setNewReviewRating(5);
+    setNewReviewText("");
+  }
+
   return (
-    <div
-      style={{
-        fontFamily: "Arial, sans-serif",
-        maxWidth: 900,
-        margin: "auto",
-        padding: 20,
-        backgroundColor: "#f9f9f9",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {/* Toolbar */}
-      <header
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "10px 20px",
-          backgroundColor: "#004d99",
-          color: "white",
-          borderRadius: 8,
-          marginBottom: 20,
-        }}
-      >
-        <div style={{ display: "flex", gap: 10 }}>
-          <button
-            onClick={loadGyms}
-            disabled={!contract || loadingGyms}
-            style={{
-              backgroundColor: "#007bff",
-              border: "none",
-              color: "white",
-              padding: "8px 16px",
-              borderRadius: 4,
-              cursor: contract && !loadingGyms ? "pointer" : "not-allowed",
-              fontWeight: "bold",
-            }}
-          >
-            {loadingGyms ? "Loading..." : "Load Gyms"}
-          </button>
-          <button
-            onClick={() => setShowAddGymModal(true)}
-            style={{
-              backgroundColor: "#28a745",
-              border: "none",
-              color: "white",
-              padding: "8px 16px",
-              borderRadius: 4,
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
-          >
-            Add Gym
-          </button>
-        </div>
-        <div style={{ fontWeight: "bold", fontSize: 14 }}>
-          Connected Wallet:{" "}
-          <span
-            style={{
-              fontFamily: "monospace",
-              backgroundColor: "#003366",
-              padding: "4px 8px",
-              borderRadius: 4,
-            }}
-            title={account}
-          >
-            {account
-              ? account.slice(0, 6) + "..." + account.slice(-4)
-              : "Not connected"}
-          </span>
-        </div>
-      </header>
+    <div style={appStyle}>
+      <Toolbar
+        contract={contract}
+        loadingGyms={loadingGyms}
+        loadGyms={loadGyms}
+        onAddGymClick={() => setShowAddGymModal(true)}
+        account={account}
+      />
 
       {/* Gyms List */}
       <main style={{ flexGrow: 1 }}>
@@ -230,121 +225,20 @@ function App() {
             No gyms loaded yet. Click "Load Gyms" to fetch.
           </p>
         ) : (
-          gyms.map((gym) => {
-            const isExpanded = expandedGymIds.has(gym.id);
-            const reviews = reviewsByGymId[gym.id] || [];
-            return (
-              <div
-                key={gym.id}
-                style={{
-                  backgroundColor: "white",
-                  borderRadius: 8,
-                  padding: 20,
-                  marginBottom: 20,
-                  boxShadow:
-                    "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
-                  transition: "box-shadow 0.3s ease",
-                }}
-              >
-                <h3 style={{ marginTop: 0, marginBottom: 10 }}>{gym.name}</h3>
-                <p style={{ marginTop: 0, marginBottom: 15, color: "#555" }}>
-                  Location: {gym.location}
-                </p>
-                <div style={{ display: "flex", gap: 10 }}>
-                  <button
-                    onClick={() => toggleExpandGym(gym.id)}
-                    style={{
-                      backgroundColor: "#17a2b8",
-                      border: "none",
-                      color: "white",
-                      padding: "6px 12px",
-                      borderRadius: 4,
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {isExpanded ? "Hide Reviews" : "View Reviews"}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSelectedGymForReview(gym.id);
-                      setShowAddReviewModal(true);
-                      setNewReviewRating(5);
-                      setNewReviewText("");
-                    }}
-                    style={{
-                      backgroundColor: "#ffc107",
-                      border: "none",
-                      color: "#333",
-                      padding: "6px 12px",
-                      borderRadius: 4,
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Add Review
-                  </button>
-                </div>
-
-                {/* Expanded Reviews Section */}
-                {isExpanded && (
-                  <div
-                    style={{
-                      marginTop: 20,
-                      borderTop: "1px solid #ddd",
-                      paddingTop: 15,
-                    }}
-                  >
-                    <h4>Reviews</h4>
-                    {reviews.length === 0 ? (
-                      <p style={{ color: "#777" }}>No reviews yet.</p>
-                    ) : (
-                      <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
-                        {reviews.map((r, i) => (
-                          <li
-                            key={i}
-                            style={{
-                              marginBottom: 15,
-                              backgroundColor: "#f8f9fa",
-                              padding: 10,
-                              borderRadius: 6,
-                              boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-                            }}
-                          >
-                            <div>
-                              <b>Rating:</b> {r.rating} / 5
-                            </div>
-                            <div>
-                              <b>Reviewer:</b>{" "}
-                              <span
-                                style={{
-                                  fontFamily: "monospace",
-                                }}
-                                title={r.reviewer}
-                              >
-                                {r.reviewer.slice(0, 6) +
-                                  "..." +
-                                  r.reviewer.slice(-4)}
-                              </span>
-                            </div>
-                            <div>
-                              <b>Review:</b> {r.reviewText}
-                            </div>
-                            <div style={{ fontSize: 12, color: "#666" }}>
-                              <i>{r.timestamp}</i>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })
+          gyms.map((gym) => (
+            <GymCard
+              key={gym.id}
+              gym={gym}
+              isExpanded={expandedGymIds.has(gym.id)}
+              toggleExpandGym={toggleExpandGym}
+              reviews={reviewsByGymId[gym.id] || []}
+              onAddReviewClick={handleAddReviewClick}
+              onRemoveGym={handleRemoveGym}
+              meanScore={gym.meanScore} // pass meanScore prop
+            />
+          ))
         )}
       </main>
-
       {/* Add Gym Modal */}
       {showAddGymModal && (
         <Modal onClose={() => setShowAddGymModal(false)} title="Add New Gym">
@@ -462,41 +356,6 @@ function App() {
           </div>
         </Modal>
       )}
-    </div>
-  );
-}
-
-function Modal({ onClose, title, children }) {
-  return (
-    <div
-      onClick={onClose}
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        backgroundColor: "rgba(0,0,0,0.4)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1000,
-      }}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          backgroundColor: "white",
-          padding: 20,
-          borderRadius: 8,
-          minWidth: 320,
-          maxWidth: "90vw",
-          boxShadow: "0 5px 15px rgba(0,0,0,0.3)",
-        }}
-      >
-        <h2 style={{ marginTop: 0 }}>{title}</h2>
-        {children}
-      </div>
     </div>
   );
 }
