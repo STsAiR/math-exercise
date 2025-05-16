@@ -1,15 +1,11 @@
 {
   "files": {
-    "main.css": "/bouldering-review/static/css/main.e6c13ad2.css",
-    "main.js": "/bouldering-review/static/js/main.53b4e05b.js",
-    "static/js/453.144d8ce9.chunk.js": "/bouldering-review/static/js/453.144d8ce9.chunk.js",
+    "main.js": "/bouldering-review/static/js/main.fad8cf9f.js",
+    "static/media/background.jpeg": "/bouldering-review/static/media/background.abcd349b010ed9f8d309.jpeg",
     "index.html": "/bouldering-review/index.html",
-    "main.e6c13ad2.css.map": "/bouldering-review/static/css/main.e6c13ad2.css.map",
-    "main.53b4e05b.js.map": "/bouldering-review/static/js/main.53b4e05b.js.map",
-    "453.144d8ce9.chunk.js.map": "/bouldering-review/static/js/453.144d8ce9.chunk.js.map"
+    "main.fad8cf9f.js.map": "/bouldering-review/static/js/main.fad8cf9f.js.map"
   },
   "entrypoints": [
-    "static/css/main.e6c13ad2.css",
-    "static/js/main.53b4e05b.js"
+    "static/js/main.fad8cf9f.js"
   ]
 }
