@@ -9,7 +9,7 @@ function GymCard({
   reviews,
   onAddReviewClick,
   onRemoveGym,
-  meanScore,
+  meanScore, // meanOverallScore from contract
 }) {
   return (
     <div
@@ -27,7 +27,7 @@ function GymCard({
         Location: {gym.location}
       </p>
       <p style={{ fontWeight: "bold", color: "#333" }}>
-        Average Rating: {meanScore} / 5
+        Average Overall Rating: {meanScore} / 5
       </p>
       <div style={{ display: "flex", gap: 10 }}>
         <button
@@ -76,7 +76,10 @@ function GymCard({
         )}
       </div>
 
-      {isExpanded && <ReviewList reviews={reviews} />}
+      {isExpanded && reviews.length > 0 && <ReviewList reviews={reviews} />}
+      {isExpanded && reviews.length === 0 && (
+        <p style={{ marginTop: 15, color: "#777" }}>No reviews yet.</p>
+      )}
     </div>
   );
 }

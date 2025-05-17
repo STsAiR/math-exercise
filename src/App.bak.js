@@ -7,16 +7,17 @@ import background from "./background.jpeg";
 
 // const contractAddress = "0xadc744e5d623e100d9461811c5b503c752fa75d3";
 // const contractAddress = "0xf2fe4f48920828d2822b2d6ef6eec91af2632b17";
-// const contractAddress = "0x3ef39b4231a645ba947bb2a02d428c377259ef78";
-const contractAddress = "0x2c2cadf1a928faf97de4be97160d5dfe88cf8d5b";
+const contractAddress = "0x3ef39b4231a645ba947bb2a02d428c377259ef78";
 
 const contractABI = [
+  "function getGymCount() view returns (uint256)",
   "function getAllGyms() view returns (uint256[] memory, string[] memory, string[] memory, uint256[] memory)",
   "function addGym(string calldata _name, string calldata _location) payable",
-  "function submitReview(uint256 _gymId, uint8 _cleanliness, uint8 _size, uint8 _difficulty, uint8 _overall, string calldata _reviewText) payable",
-  "function getReviews(uint256 _gymId) view returns (tuple(address reviewer, uint8 cleanliness, uint8 size, uint8 difficulty, uint8 overall, string reviewText, uint256 timestamp)[])",
+  "function submitReview(uint256 _gymId, uint8 _rating, string calldata _reviewText) payable",
+  "function getReviews(uint256 _gymId) view returns (tuple(address reviewer, uint8 rating, string reviewText, uint256 timestamp)[])",
   "function removeGym(uint256 _gymId) public",
 ];
+
 function App() {
   const appStyle = {
     fontFamily: "Arial, sans-serif",
@@ -50,11 +51,7 @@ function App() {
 
   // Review form
   const [selectedGymForReview, setSelectedGymForReview] = useState(null);
-  // const [newReviewRating, setNewReviewRating] = useState(5);
-  const [newReviewCleanliness, setNewReviewCleanliness] = useState(1);
-  const [newReviewSize, setNewReviewSize] = useState(1);
-  const [newReviewDifficulty, setNewReviewDifficulty] = useState(1);
-  const [newReviewOverall, setNewReviewOverall] = useState(1);
+  const [newReviewRating, setNewReviewRating] = useState(5);
   const [newReviewText, setNewReviewText] = useState("");
 
   // Expanded cards for showing reviews
@@ -114,13 +111,9 @@ function App() {
     if (!contract || !gymId) return;
     try {
       const rawReviews = await contract.getReviews(gymId);
-
       const cleanedReviews = rawReviews.map((r) => ({
         reviewer: r.reviewer,
-        cleanliness: r.cleanliness,
-        size: r.size,
-        difficulty: r.difficulty,
-        overall: r.overall,
+        rating: r.rating,
         reviewText: r.reviewText,
         timestamp: new Date(Number(r.timestamp) * 1000).toLocaleString(),
       }));
@@ -154,20 +147,14 @@ function App() {
     try {
       const tx = await contract.submitReview(
         selectedGymForReview,
-        newReviewCleanliness,
-        newReviewSize,
-        newReviewDifficulty,
-        newReviewOverall,
+        newReviewRating,
         newReviewText,
         { value: 0 }
       );
       await tx.wait();
       alert("Review submitted!");
       setNewReviewText("");
-      setNewReviewCleanliness(1);
-      setNewReviewSize(1);
-      setNewReviewDifficulty(1);
-      setNewReviewOverall(1);
+      setNewReviewRating(5);
       setShowAddReviewModal(false);
       await loadGyms();
       await loadReviews(selectedGymForReview);
@@ -217,10 +204,7 @@ function App() {
   function handleAddReviewClick(gymId) {
     setSelectedGymForReview(gymId);
     setShowAddReviewModal(true);
-    setNewReviewCleanliness(1);
-    setNewReviewSize(1);
-    setNewReviewDifficulty(1);
-    setNewReviewOverall(1);
+    setNewReviewRating(5);
     setNewReviewText("");
   }
 
@@ -319,53 +303,10 @@ function App() {
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             <label style={{ fontWeight: "bold" }}>
-              Cleanliness:
+              Rating:
               <select
-                value={newReviewCleanliness}
-                onChange={(e) =>
-                  setNewReviewCleanliness(parseInt(e.target.value))
-                }
-                style={{ marginLeft: 10, padding: 6, fontSize: 16 }}
-              >
-                {[5, 4, 3, 2, 1].map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-              <span style={{ marginLeft: 10 }}></span>
-              Bouldering Gym Size:
-              <select
-                value={newReviewSize}
-                onChange={(e) => setNewReviewSize(parseInt(e.target.value))}
-                style={{ marginLeft: 10, padding: 6, fontSize: 16 }}
-              >
-                {[5, 4, 3, 2, 1].map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-              <span style={{ marginLeft: 10 }}></span>
-              Route Difficulty:
-              <select
-                value={newReviewDifficulty}
-                onChange={(e) =>
-                  setNewReviewDifficulty(parseInt(e.target.value))
-                }
-                style={{ marginLeft: 10, padding: 6, fontSize: 16 }}
-              >
-                {[5, 4, 3, 2, 1].map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-              <span style={{ marginLeft: 10 }}></span>
-              Overall Rating:
-              <select
-                value={newReviewOverall}
-                onChange={(e) => setNewReviewOverall(parseInt(e.target.value))}
+                value={newReviewRating}
+                onChange={(e) => setNewReviewRating(parseInt(e.target.value))}
                 style={{ marginLeft: 10, padding: 6, fontSize: 16 }}
               >
                 {[5, 4, 3, 2, 1].map((r) => (

@@ -27,7 +27,9 @@ function ReviewList({ reviews }) {
               }}
             >
               <div>
-                <b>Rating:</b> {r.rating} / 5
+                <b>Cleanliness:</b> {r.cleanliness} / 5 &nbsp;|&nbsp;{" "}
+                <b>Size:</b> {r.size} / 5 &nbsp;|&nbsp; <b>Difficulty:</b>{" "}
+                {r.difficulty} / 5 &nbsp;|&nbsp; <b>Overall:</b> {r.overall} / 5
               </div>
               <div>
                 <b>Reviewer:</b>{" "}
