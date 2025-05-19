@@ -1,11 +1,11 @@
 {
   "files": {
-    "main.js": "/bouldering-review/static/js/main.7f14861a.js",
+    "main.js": "/bouldering-review/static/js/main.51dc75eb.js",
     "static/media/background.jpeg": "/bouldering-review/static/media/background.abcd349b010ed9f8d309.jpeg",
     "index.html": "/bouldering-review/index.html",
-    "main.7f14861a.js.map": "/bouldering-review/static/js/main.7f14861a.js.map"
+    "main.51dc75eb.js.map": "/bouldering-review/static/js/main.51dc75eb.js.map"
   },
   "entrypoints": [
-    "static/js/main.7f14861a.js"
+    "static/js/main.51dc75eb.js"
   ]
 }
