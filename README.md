@@ -1,25 +1,49 @@
-# bouldering-review page
+# Bouldering Gym Review
 
-## Introduction
+## Overview
 
-This is a simple web application that allows users give comments on different bouldering gyms. The application is built using smart contract technology and react for the frontend. The smart contract is written in Solidity and deployed on the Ethereum Test Network (Ethereum Sepolia). The frontend is built using React and connects to the smart contract using ethers.js.
+The Bouldering Gym Review application is a decentralized platform that allows users to review and comment on various bouldering gyms in Hong Kong. Built using smart contract technology and React, this application ensures that reviews are immutable and transparent.
 
-The application allows users to add bouldering gyms, and leave reviews for the gyms. The reviews are stored on the blockchain, ensuring that they are immutable and transparent. The application also allows users to view reviews left by other users and see the average rating for each gym.
+## Ethereum Testnet
 
-The page is currently hosted on [Github Pages](https://stsair.github.io/bouldering-review), and the smart contract is deployed on the Ethereum Sepolia Test Network with contract adress `0xe2978036e3813bb6a191fbf20f5adacb036facbf`. The application uses MetaMask for user authentication, allowing users to connect their Ethereum wallets and interact with the smart contract.
+The smart contract is deployed on the Ethereum Sepolia Test Network at the address:
+
+```
+0xe2978036e3813bb6a191fbf20f5adacb036facbf
+```
 
 ## Features
 
-- Add bouldering gyms
-- Leave reviews for bouldering gyms
-- View reviews and average ratings for each gym
-- User authentication using MetaMask
+- Add and remove bouldering gyms.
+- Submit and view reviews with ratings for cleanliness, size, difficulty, and overall experience.
+- User authentication through MetaMask.
 
 ## Getting Started
 
-To get started with the application, follow these steps:
+To run the project locally, follow these steps:
 
-1. Clone the repository to your local machine.
-2. Install the required dependencies using `npm install`.
-3. Start the frontend application using `npm start`.
-4. Open the application in your web browser and connect your MetaMask wallet.
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/STsAiR/bouldering-review.git
+   cd bouldering-review
+   ```
+
+2. Install the required dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Start the front-end application:
+
+   ```bash
+   npm start
+   ```
+
+4. Open your browser and navigate to `http://localhost:3000`.
+
+## Live Demonstration
+
+The application is hosted on GitHub Pages and can be accessed at the following link:
+[Live Demo](https://stsair.github.io/bouldering-review)
