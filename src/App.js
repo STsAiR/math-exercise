@@ -5,10 +5,7 @@ import Toolbar from "./components/Toolbar";
 import GymCard from "./components/GymCard";
 import background from "./background.jpeg";
 
-// const contractAddress = "0xadc744e5d623e100d9461811c5b503c752fa75d3";
-// const contractAddress = "0xf2fe4f48920828d2822b2d6ef6eec91af2632b17";
-// const contractAddress = "0x3ef39b4231a645ba947bb2a02d428c377259ef78";
-const contractAddress = "0x2c2cadf1a928faf97de4be97160d5dfe88cf8d5b";
+const contractAddress = "0xe2978036e3813bb6a191fbf20f5adacb036facbf";
 
 const contractABI = [
   "function getAllGyms() view returns (uint256[] memory, string[] memory, string[] memory, uint256[] memory)",

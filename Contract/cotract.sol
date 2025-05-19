@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// contract address: 0xe2978036e3813bb6a191fbf20f5adacb036facbf
 pragma solidity ^0.8.0;
 
 contract BoulderingGymReview {
@@ -219,19 +220,8 @@ contract BoulderingGymReview {
         return (block.number, block.timestamp, block.coinbase, block.gaslimit);
     }
 
-    // Utility function: check sender and origin
-    function checkSender()
-        public
-        view
-        returns (address sender, address origin)
-    {
-        return (msg.sender, tx.origin);
-    }
-
     // Utility function: hash data input
     function getHash(string memory data) public pure returns (bytes32) {
         return keccak256(abi.encodePacked(data));
     }
 }
-
-// 0x2c2cadf1a928faf97de4be97160d5dfe88cf8d5b
