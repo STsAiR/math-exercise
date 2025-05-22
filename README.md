@@ -1,22 +1,4 @@
-# Bouldering Gym Review
-
-## Overview
-
-The Bouldering Gym Review application is a decentralized platform that allows users to review and comment on various bouldering gyms in Hong Kong. Built using smart contract technology and React, this application ensures that reviews are immutable and transparent.
-
-## Ethereum Testnet
-
-The smart contract is deployed on the Ethereum Sepolia Test Network at the address:
-
-```
-0xe2978036e3813bb6a191fbf20f5adacb036facbf
-```
-
-## Features
-
-- Add and remove bouldering gyms.
-- Submit and view reviews with ratings for cleanliness, size, difficulty, and overall experience.
-- User authentication through MetaMask.
+# Math exercises
 
 ## Getting Started
 
@@ -46,4 +28,4 @@ To run the project locally, follow these steps:
 ## Live Demonstration
 
 The application is hosted on GitHub Pages and can be accessed at the following link:
-[Live Demo](https://stsair.github.io/bouldering-review)
+[Live Demo](https://stsair.github.io/math-exercise)

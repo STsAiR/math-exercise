@@ -1,6 +1,6 @@
 {
-  "homepage": "https://stsair.github.io/bouldering-review",
-  "name": "bouldering",
+  "homepage": "https://stsair.github.io/math-exercise",
+  "name": "exercise",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
