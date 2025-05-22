@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.js": "/math-exercise/static/js/main.1d77fff4.js",
+    "main.js": "/math-exercise/static/js/main.8414126f.js",
     "static/media/Basic Properties of Circles(Q).pdf": "/math-exercise/static/media/Basic Properties of Circles(Q).49edcb3a8849c5ea837e.pdf",
     "static/media/More about Trigonmetry (II)(Q).pdf": "/math-exercise/static/media/More about Trigonmetry (II)(Q).8133527d2991c9df07c8.pdf",
     "static/media/Basic Properties of Circles II(Q).pdf": "/math-exercise/static/media/Basic Properties of Circles II(Q).3c48af5e9475d95f9e10.pdf",
@@ -20,9 +20,9 @@
     "static/media/Uses and Abuses of Statistics(Q).pdf": "/math-exercise/static/media/Uses and Abuses of Statistics(Q).32b89879d1526f8ea521.pdf",
     "static/media/More about Polynomials(Q).pdf": "/math-exercise/static/media/More about Polynomials(Q).d4925536480a378a6e6b.pdf",
     "index.html": "/math-exercise/index.html",
-    "main.1d77fff4.js.map": "/math-exercise/static/js/main.1d77fff4.js.map"
+    "main.8414126f.js.map": "/math-exercise/static/js/main.8414126f.js.map"
   },
   "entrypoints": [
-    "static/js/main.1d77fff4.js"
+    "static/js/main.8414126f.js"
   ]
 }
