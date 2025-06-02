@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { subjects } from "../constants";
 
 export default function VideoSearch() {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear() + 1;
 
   const [yearOptions, setYearOptions] = useState([]);
   const [year, setYear] = useState("");

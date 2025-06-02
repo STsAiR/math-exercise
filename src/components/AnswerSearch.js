@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { subjects } from "../constants";
 
 export default function AnswerSearch() {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear() + 1;
 
   const [yearOptions, setYearOptions] = useState([]);
   const [year, setYear] = useState("");
@@ -19,22 +19,10 @@ export default function AnswerSearch() {
   }, [currentYear]);
 
   function generateUrl(type, year, subject) {
-    // Logic from original generateUrl function:
-    const baseUrl = "https://dse.life/static/pp";
-    if (subject === "m1" || subject === "m2") {
-      return `${baseUrl}/${subject}/dse/${year}/pp.pdf`;
-    } else if (
-      ["phy", "ict", "bafs", "chem", "bio", "econ", "enghist", "geog"].includes(
-        subject
-      )
-    ) {
-      const fileName = type === "ans" ? "ans" : "";
-      return `${baseUrl}/${subject}/eng/dse/${year}/${fileName}.pdf`;
-    } else {
-      const subjectPath = subject === "m0" ? "m0/eng" : subject;
-      const fileName = type === "ans" ? "ans" : "";
-      return `${baseUrl}/${subjectPath}/dse/${year}/${fileName}.pdf`;
-    }
+    const baseUrl = process.env.PUBLIC_URL || "";
+    const fileName = type === "ans" ? "answer" : "";
+    const subjectPath = subject === "m0" ? "m0" : subject;
+    return `${baseUrl}/${subjectPath}/${year}/${fileName}.pdf`;
   }
 
   function searchAnswer() {
