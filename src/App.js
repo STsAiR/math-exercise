@@ -1,98 +1,81 @@
-import React, { useState } from "react";
-import JSZip from "jszip";
-import { saveAs } from "file-saver";
+import React, { useState, useEffect } from "react";
+import Header from "./components/Header";
+import Nav from "./components/Nav";
+import GradeCalculator from "./components/GradeCalculator";
+import AnswerSearch from "./components/AnswerSearch";
+import VideoSearch from "./components/VideoSearch";
+import PaperOpener from "./components/PaperOpener";
+import ExerciseOpener from "./components/ExerciseOpener";
+import "./App.css";
 
-// Dynamically import all PDF files inside ./exercises folder
-function importAll(r) {
-  return r.keys().map((key) => ({
-    fileName: key.replace("./", ""),
-    filePath: r(key).default || r(key),
-  }));
-}
+function App() {
+  const [activeSection, setActiveSection] = useState("grade-calculator");
+  const [cutoffData, setCutoffData] = useState(null);
 
-const pdfFiles = importAll(require.context("./exercises", false, /\.pdf$/));
+  const [countdown, setCountdown] = useState({
+    days: 0,
+    hours: "00",
+    minutes: "00",
+    seconds: "00",
+  });
 
-export default function App() {
-  const [selectedFile, setSelectedFile] = useState(
-    pdfFiles[0]?.filePath || null
-  );
+  useEffect(() => {
+    fetch(process.env.PUBLIC_URL + "/cutoffData.json")
+      .then((res) => res.json())
+      .then((data) => setCutoffData(data))
+      .catch((err) => console.error("Error loading cutoff data:", err));
+  }, []);
 
-  const downloadAllAsZip = async () => {
-    if (pdfFiles.length === 0) return;
+  useEffect(() => {
+    const examDate = new Date("2026-04-08T00:00:00").getTime();
 
-    const zip = new JSZip();
-    const folder = zip.folder("exercises");
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = examDate - now;
 
-    try {
-      await Promise.all(
-        pdfFiles.map(async ({ fileName, filePath }) => {
-          const response = await fetch(filePath);
-          if (!response.ok) throw new Error(`Failed to fetch ${fileName}`);
-          const blob = await response.blob();
-          folder.file(fileName, blob);
-        })
+      if (distance < 0) {
+        setCountdown({ days: 0, hours: "00", minutes: "00", seconds: "00" });
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
       );
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-      const content = await zip.generateAsync({ type: "blob" });
-      saveAs(content, "exercises.zip");
-    } catch (error) {
-      alert("Error creating ZIP: " + error.message);
+      setCountdown({
+        days,
+        hours: padZero(hours),
+        minutes: padZero(minutes),
+        seconds: padZero(seconds),
+      });
     }
-  };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  function padZero(num) {
+    return num < 10 ? "0" + num : num;
+  }
 
   return (
-    <div style={{ maxWidth: 900, margin: "auto", padding: 20 }}>
-      <h1>Math Exercise Page</h1>
-
-      <div style={{ marginBottom: 20 }}>
-        <h2>Available PDFs</h2>
-        <button
-          onClick={downloadAllAsZip}
-          disabled={pdfFiles.length === 0}
-          style={{
-            marginBottom: 12,
-            padding: "8px 12px",
-            cursor: pdfFiles.length === 0 ? "not-allowed" : "pointer",
-          }}
-        >
-          Download All as ZIP
-        </button>
-
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          {pdfFiles.map(({ fileName, filePath }) => (
-            <li key={fileName} style={{ marginBottom: 8 }}>
-              <button
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "blue",
-                  textDecoration: "underline",
-                  cursor: "pointer",
-                  padding: 0,
-                  fontSize: "1rem",
-                }}
-                onClick={() => setSelectedFile(filePath)}
-              >
-                {fileName}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div style={{ border: "1px solid #ccc", height: "600px" }}>
-        {selectedFile ? (
-          <iframe
-            title="PDF Viewer"
-            src={selectedFile}
-            width="100%"
-            height="100%"
-            style={{ border: "none" }}
-          />
-        ) : (
-          <p>No PDF selected</p>
-        )}
-      </div>
+    <div className="container">
+      <Header countdown={countdown} />
+      <Nav activeSection={activeSection} setActiveSection={setActiveSection} />
+      {activeSection === "grade-calculator" && (
+        <GradeCalculator cutoffData={cutoffData} />
+      )}
+      {activeSection === "answer-search" && <AnswerSearch />}
+      {activeSection === "video-search" && <VideoSearch />}
+      {activeSection === "paper-opener" && <PaperOpener />}
+      {activeSection === "exercise-opener" && <ExerciseOpener />}
+      {/* Add ExerciseExtract component here if needed */}
     </div>
   );
 }
+
+export default App;
