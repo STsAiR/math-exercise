@@ -10,5 +10,4 @@ def remove_pages(input_pdf, output_pdf, start_page, end_page):
         writer.write(f)
 
 if __name__ == "__main__":
-    remove_pages("p1.pdf", "p1_done.pdf", 1, 24)
-    remove_pages("p1.pdf", "p2.pdf", 25, 39)
+    remove_pages("./pp/p2.pdf", "./pp/p2_done.pdf", 1, 24)
